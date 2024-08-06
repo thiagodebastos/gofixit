@@ -4,15 +4,16 @@ import (
 	"errors"
 
 	"github.com/google/uuid"
-	"github.com/thiagodebastos/gofixit/domain/valueobject/issue"
+	"github.com/thiagodebastos/gofixit/domain/valueobject"
 )
 
 type Issue interface {
 	ID() uuid.UUID
 	Title() string
 	Description() string
-	Status() issue.Status
-	ChangeStatus(newStatus issue.Status) error
+	Status() valueobject.Status
+	Priority() valueobject.Priority
+	ChangeStatus(newStatus valueobject.Status) error
 	UpdateTitle(newTitle string) error
 	UpdateDescription(newDescription string)
 }
@@ -20,17 +21,15 @@ type Issue interface {
 type issueEntity struct {
 	title       string
 	description string
-	status      issue.Status
+	status      valueobject.Status
 	id          uuid.UUID
+	priority    valueobject.Priority
 }
 
 var ErrInvalidStatus = errors.New("invalid status")
 
 // NewIssue creates a new issue
-func NewIssue(id uuid.UUID, title string, description string, status issue.Status) (*issueEntity, error) {
-	if !issue.ValidStatus(status) {
-		return nil, ErrInvalidStatus
-	}
+func NewIssue(id uuid.UUID, title string, description string, status valueobject.Status) (*issueEntity, error) {
 	return &issueEntity{
 		id:          id,
 		title:       title,
@@ -39,10 +38,10 @@ func NewIssue(id uuid.UUID, title string, description string, status issue.Statu
 	}, nil
 }
 
-func (i *issueEntity) ID() uuid.UUID        { return i.id }
-func (i *issueEntity) Title() string        { return i.title }
-func (i *issueEntity) Status() issue.Status { return i.status }
-func (i *issueEntity) Description() string  { return i.description }
+func (i *issueEntity) ID() uuid.UUID              { return i.id }
+func (i *issueEntity) Title() string              { return i.title }
+func (i *issueEntity) Status() valueobject.Status { return i.status }
+func (i *issueEntity) Description() string        { return i.description }
 
 func (i *issueEntity) UpdateTitle(newTitle string) error {
 	if i.Title() == "" {
@@ -53,25 +52,25 @@ func (i *issueEntity) UpdateTitle(newTitle string) error {
 	return nil
 }
 
-func (i *issueEntity) ChangeStatus(newStatus issue.Status) error {
+func (i *issueEntity) SetStatus(newStatus valueobject.Status) error {
 	switch i.status {
-	case issue.StatusOpen:
-		if newStatus == issue.StatusReopened {
+	case valueobject.StatusOpen:
+		if newStatus == valueobject.StatusReopened {
 			return errors.New("an Open ticket cannot be moved to Reopened")
 		}
-	case issue.StatusClosed:
-		if newStatus != issue.StatusReopened && newStatus != issue.StatusResolved {
+	case valueobject.StatusClosed:
+		if newStatus != valueobject.StatusReopened && newStatus != valueobject.StatusResolved {
 			return errors.New("an Closed ticket can only be moved to Reopened or Resolved")
 		}
-	case issue.StatusResolved:
-		if newStatus != issue.StatusReopened {
+	case valueobject.StatusResolved:
+		if newStatus != valueobject.StatusReopened {
 			return errors.New("an Resolved ticket can only be moved to Reopened")
 		}
-	case issue.StatusReopened:
-		if newStatus == issue.StatusOpen {
+	case valueobject.StatusReopened:
+		if newStatus == valueobject.StatusOpen {
 			return errors.New("a Reopened ticket cannot be moved to Opened")
 		}
-	case issue.StatusInProgress:
+	case valueobject.StatusInProgress:
 		// Allow any transition from InProgress or Reopened
 	default:
 		return errors.New("invalid current status")
@@ -82,6 +81,7 @@ func (i *issueEntity) ChangeStatus(newStatus issue.Status) error {
 	return nil
 }
 
-func (i *issueEntity) ValidStatus(status issue.Status) bool {
-	panic("not implemented")
+func (i *issueEntity) SetPriority(newPriority valueobject.Priority) error {
+	i.priority = newPriority
+	return nil
 }

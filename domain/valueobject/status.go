@@ -1,4 +1,4 @@
-package issue
+package valueobject
 
 import "errors"
 
@@ -33,16 +33,6 @@ var (
 		StatusReopened:   true,
 	}
 )
-
-// constructor function that instantiates a Status object and validates the input
-func NewStatus(value Status) (Status, error) {
-	if !validStatuses[value] {
-		return StatusInvalid, ErrInvalidStatus
-	}
-
-	// validate that new status is always of type status
-	return value, nil
-}
 
 // getter function that returns the IssueStatus value
 func (s Status) Value() Status {

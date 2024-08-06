@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/thiagodebastos/gofixit/domain/entity"
-	"github.com/thiagodebastos/gofixit/domain/valueobject/issue"
+	"github.com/thiagodebastos/gofixit/domain/valueobject"
 )
 
 func createIssue() entity.Issue {
@@ -23,9 +23,7 @@ func createIssue() entity.Issue {
 	description, _ := reader.ReadString('\n')
 	description = strings.TrimSpace(description)
 
-	status, _ := issue.NewStatus(issue.StatusOpen)
-
-	i, _ := entity.NewIssue(uuid.New(), title, description, status)
+	i, _ := entity.NewIssue(uuid.New(), title, description, valueobject.StatusOpen)
 
 	print(i)
 
