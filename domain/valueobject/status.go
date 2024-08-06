@@ -32,6 +32,6 @@ func (s Status) Value() Status {
 	return s
 }
 
-func (s Status) ToString() string {
+func (s Status) StatusToString() string {
 	return statusNames[s]
 }

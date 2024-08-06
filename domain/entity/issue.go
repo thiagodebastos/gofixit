@@ -33,8 +33,13 @@ type issueEntity struct {
 
 var ErrInvalidStatus = errors.New("invalid status")
 
-// NewIssue creates a new issue
-func NewIssue(id uuid.UUID, title string, description string, status valueobject.Status, priority valueobject.Priority) (*issueEntity, error) {
+// NewIssue is a factory responsible for creating a new Issue
+func NewIssue(id uuid.UUID,
+	title string,
+	description string,
+	status valueobject.Status,
+	priority valueobject.Priority,
+) (Issue, error) {
 	issue := &issueEntity{
 		id:          id,
 		title:       title,
@@ -101,29 +106,29 @@ func (i *issueEntity) validateStatusTransition(newStatus valueobject.Status) err
 	case valueobject.StatusOpen:
 		if newStatus == valueobject.StatusReopened {
 			return &InvalidIssueStateTransitionError{
-				From: i.Status().ToString(),
-				To:   newStatus.ToString(),
+				From: i.Status().StatusToString(),
+				To:   newStatus.StatusToString(),
 			}
 		}
 	case valueobject.StatusClosed:
 		if newStatus != valueobject.StatusReopened && newStatus != valueobject.StatusResolved {
 			return &InvalidIssueStateTransitionError{
-				From: i.Status().ToString(),
-				To:   newStatus.ToString(),
+				From: i.Status().StatusToString(),
+				To:   newStatus.StatusToString(),
 			}
 		}
 	case valueobject.StatusResolved:
 		if newStatus != valueobject.StatusReopened {
 			return &InvalidIssueStateTransitionError{
-				From: i.Status().ToString(),
-				To:   newStatus.ToString(),
+				From: i.Status().StatusToString(),
+				To:   newStatus.StatusToString(),
 			}
 		}
 	case valueobject.StatusReopened:
 		if newStatus == valueobject.StatusOpen {
 			return &InvalidIssueStateTransitionError{
-				From: i.Status().ToString(),
-				To:   newStatus.ToString(),
+				From: i.Status().StatusToString(),
+				To:   newStatus.StatusToString(),
 			}
 		}
 	case valueobject.StatusInProgress:

@@ -191,7 +191,7 @@ func TestSetIssueTitle(t *testing.T) {
 	}
 
 	err = newIssue.SetTitle("")
-	newTitle := newIssue.title
+	newTitle := newIssue.Title()
 	if err != nil {
 		t.Errorf("expected updateTitleError, got nil, %v", newTitle)
 	}

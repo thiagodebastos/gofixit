@@ -35,6 +35,6 @@ func PriorityFromString(s string) (Priority, bool) {
 	return Priority(-1), false
 }
 
-func (p Priority) ToString() string {
+func PriorityToString(p Priority) string {
 	return priorityNames[p]
 }
