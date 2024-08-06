@@ -28,7 +28,7 @@ func TestSetPriorityFromString(t *testing.T) {
 }
 
 func TestGetPriorityString(t *testing.T) {
-	priorityString := PriorityToString(PriorityHigh)
+	priorityString := Priority(PriorityHigh).ToString()
 
 	want := "high"
 	got := priorityString

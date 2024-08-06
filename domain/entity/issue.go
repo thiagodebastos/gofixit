@@ -106,29 +106,29 @@ func (i *issueEntity) validateStatusTransition(newStatus valueobject.Status) err
 	case valueobject.StatusOpen:
 		if newStatus == valueobject.StatusReopened {
 			return &InvalidIssueStateTransitionError{
-				From: i.Status().StatusToString(),
-				To:   newStatus.StatusToString(),
+				From: i.Status().ToString(),
+				To:   newStatus.ToString(),
 			}
 		}
 	case valueobject.StatusClosed:
 		if newStatus != valueobject.StatusReopened && newStatus != valueobject.StatusResolved {
 			return &InvalidIssueStateTransitionError{
-				From: i.Status().StatusToString(),
-				To:   newStatus.StatusToString(),
+				From: i.Status().ToString(),
+				To:   newStatus.ToString(),
 			}
 		}
 	case valueobject.StatusResolved:
 		if newStatus != valueobject.StatusReopened {
 			return &InvalidIssueStateTransitionError{
-				From: i.Status().StatusToString(),
-				To:   newStatus.StatusToString(),
+				From: i.Status().ToString(),
+				To:   newStatus.ToString(),
 			}
 		}
 	case valueobject.StatusReopened:
 		if newStatus == valueobject.StatusOpen {
 			return &InvalidIssueStateTransitionError{
-				From: i.Status().StatusToString(),
-				To:   newStatus.StatusToString(),
+				From: i.Status().ToString(),
+				To:   newStatus.ToString(),
 			}
 		}
 	case valueobject.StatusInProgress:
