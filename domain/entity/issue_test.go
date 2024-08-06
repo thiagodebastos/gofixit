@@ -13,6 +13,7 @@ func TestNewIssue(t *testing.T) {
 		title       string
 		description string
 		status      valueobject.Status
+		priority    valueobject.Priority
 		expectErr   bool
 	}{
 		{
@@ -20,23 +21,21 @@ func TestNewIssue(t *testing.T) {
 			title:       "Test Issue",
 			description: "This is a test issue.",
 			status:      valueobject.StatusOpen,
-		}, {
-			name:        "Invalid Status",
-			title:       "Test issue",
-			description: "This is a test issue.",
-			status:      valueobject.StatusInvalid,
-			expectErr:   true,
+			priority:    valueobject.PriorityMedium,
+			expectErr:   false,
 		}, {
 			name:        "Invalid Title",
 			title:       "",
 			description: "",
+			priority:    valueobject.PriorityMedium,
 			status:      valueobject.StatusOpen,
+			expectErr:   true,
 		},
 	}
 
 	for _, tt := range tests {
 		id := uuid.New()
-		newIssue, err := NewIssue(id, tt.title, tt.description, tt.status)
+		newIssue, err := NewIssue(id, tt.title, tt.description, tt.status, tt.priority)
 
 		if tt.expectErr {
 			if err == nil {
@@ -59,82 +58,97 @@ func TestNewIssue(t *testing.T) {
 	}
 }
 
-func TestUpdateIssueStatus(t *testing.T) {
+func TestSetIssueStatus(t *testing.T) {
 	tests := []struct {
 		name       string
 		status     valueobject.Status
+		priority   valueobject.Priority
 		nextStatus valueobject.Status
 		expectErr  bool
 	}{
 		{
 			name:       "closed -> reopened",
+			priority:   valueobject.PriorityLow,
 			status:     valueobject.StatusClosed,
 			nextStatus: valueobject.StatusReopened,
 			expectErr:  false,
 		}, {
 			name:       "closed -> resolved",
+			priority:   valueobject.PriorityLow,
 			status:     valueobject.StatusClosed,
 			nextStatus: valueobject.StatusResolved,
 			expectErr:  false,
 		}, {
 			name:       "closed -> opened",
+			priority:   valueobject.PriorityLow,
 			status:     valueobject.StatusClosed,
 			nextStatus: valueobject.StatusOpen,
 			expectErr:  true,
 		}, {
 			name:       "closed -> inprogress",
+			priority:   valueobject.PriorityLow,
 			status:     valueobject.StatusClosed,
 			nextStatus: valueobject.StatusInProgress,
 			expectErr:  true,
 		}, {
 			name:       "resolved -> reopened",
+			priority:   valueobject.PriorityLow,
 			status:     valueobject.StatusResolved,
 			nextStatus: valueobject.StatusReopened,
 			expectErr:  false,
 		}, {
 			name:       "resolved -> open",
+			priority:   valueobject.PriorityLow,
 			status:     valueobject.StatusResolved,
 			nextStatus: valueobject.StatusOpen,
 			expectErr:  true,
 		}, {
 			name:       "open -> reopened",
+			priority:   valueobject.PriorityLow,
 			status:     valueobject.StatusOpen,
 			nextStatus: valueobject.StatusReopened,
 			expectErr:  true,
 		}, {
 			name:       "open -> inprogress",
+			priority:   valueobject.PriorityLow,
 			status:     valueobject.StatusOpen,
 			nextStatus: valueobject.StatusInProgress,
 			expectErr:  false,
 		}, {
 			name:       "open -> resolved",
+			priority:   valueobject.PriorityLow,
 			status:     valueobject.StatusOpen,
 			nextStatus: valueobject.StatusResolved,
 			expectErr:  false,
 		}, {
 			name:       "open -> closed",
+			priority:   valueobject.PriorityLow,
 			status:     valueobject.StatusOpen,
 			nextStatus: valueobject.StatusClosed,
 			expectErr:  false,
 		}, {
 			// TODO: inprogress should only move to reopened if it HAS been closed closed or resolved before
 			name:       "inprogress -> reopened",
+			priority:   valueobject.PriorityLow,
 			status:     valueobject.StatusInProgress,
 			nextStatus: valueobject.StatusReopened,
 			expectErr:  false,
 		}, {
 			name:       "inprogress -> closed",
+			priority:   valueobject.PriorityLow,
 			status:     valueobject.StatusInProgress,
 			nextStatus: valueobject.StatusClosed,
 			expectErr:  false,
 		}, {
 			name:       "inprogress -> resolved",
+			priority:   valueobject.PriorityLow,
 			status:     valueobject.StatusInProgress,
 			nextStatus: valueobject.StatusResolved,
 			expectErr:  false,
 		}, {
 			// TODO: inprogress should only move to opened if it has NOT been closed closed or resolved before
 			name:       "inprogress -> open",
+			priority:   valueobject.PriorityLow,
 			status:     valueobject.StatusInProgress,
 			nextStatus: valueobject.StatusOpen,
 			expectErr:  false,
@@ -143,7 +157,7 @@ func TestUpdateIssueStatus(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			newIssue, err := NewIssue(uuid.New(), "Test Issue", "", tt.status)
+			newIssue, err := NewIssue(uuid.New(), "Test Issue", "", tt.status, tt.priority)
 			if err != nil {
 				t.Fatalf("failed to create a new issue: %v", err)
 			}
@@ -164,18 +178,19 @@ func TestUpdateIssueStatus(t *testing.T) {
 	}
 }
 
-func TestUpdateIssueTitle(t *testing.T) {
+func TestSetIssueTitle(t *testing.T) {
 	newIssue, err := NewIssue(
 		uuid.New(),
 		"Test Title",
 		"Test Description",
 		valueobject.StatusOpen,
+		valueobject.PriorityLow,
 	)
 	if err != nil {
 		t.Fatalf("failed to create a new issue: %v", err)
 	}
 
-	err = newIssue.UpdateTitle("")
+	err = newIssue.SetTitle("")
 	newTitle := newIssue.title
 	if err != nil {
 		t.Errorf("expected updateTitleError, got nil, %v", newTitle)
@@ -188,6 +203,7 @@ func TestSetIssuePriority(t *testing.T) {
 		"Test Title",
 		"Test Description",
 		valueobject.StatusOpen,
+		valueobject.PriorityLow,
 	)
 	if err != nil {
 		t.Fatalf("failed to create a new issue: %v", err)

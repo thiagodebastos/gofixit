@@ -23,11 +23,27 @@ func createIssue() entity.Issue {
 	description, _ := reader.ReadString('\n')
 	description = strings.TrimSpace(description)
 
-	i, _ := entity.NewIssue(uuid.New(), title, description, valueobject.StatusOpen)
+	fmt.Print("Add a priority [lowest, low, medium, high, highest]: ")
+	priority, _ := reader.ReadString('\n')
+	priority = strings.TrimSpace(priority)
+	newPriority, priorityOk := valueobject.PriorityFromString(priority)
 
-	print(i)
+	for !priorityOk {
+		fmt.Print("Invalid priority, add a priority [lowest, low, medium, high, highest]: ")
+		priority, _ := reader.ReadString('\n')
+		priority = strings.TrimSpace(priority)
+		newPriority, priorityOk = valueobject.PriorityFromString(priority)
+	}
 
-	return nil
+	i, _ := entity.NewIssue(
+		uuid.New(),
+		title,
+		description,
+		valueobject.StatusOpen,
+		newPriority,
+	)
+
+	return i
 }
 
 func main() {
@@ -39,7 +55,8 @@ func main() {
 		printAligned("ID", i.ID())
 		printAligned("Title", i.Title())
 		printAligned("Description", i.Description())
-		printAligned("Status", i.Status())
+		printAligned("Status", i.Status().ToString())
+		printAligned("Priority", i.Priority().ToString())
 		fmt.Printf("\n")
 	}
 

@@ -1,20 +1,16 @@
 package valueobject
 
-import "errors"
-
 type Status int
 
 const (
-	StatusInvalid = iota
-	StatusOpen
+	StatusOpen = iota
 	StatusInProgress
 	StatusResolved
 	StatusClosed
 	StatusReopened
 )
 
-var statusName = map[Status]string{
-	StatusInvalid:    "invalid",
+var statusNames = map[Status]string{
 	StatusOpen:       "open",
 	StatusInProgress: "inprogress",
 	StatusResolved:   "resolved",
@@ -22,23 +18,20 @@ var statusName = map[Status]string{
 	StatusReopened:   "reopened",
 }
 
-var (
-	ErrInvalidStatus = errors.New("invalid status")
-	validStatuses    = map[Status]bool{
-		StatusInvalid:    false,
-		StatusOpen:       true,
-		StatusClosed:     true,
-		StatusInProgress: true,
-		StatusResolved:   true,
-		StatusReopened:   true,
+func NewStatus(value string) (Status, error) {
+	for s, name := range statusNames {
+		if name == value {
+			return s, nil
+		}
 	}
-)
+	return Status(-1), &InvalidStatusError{Value: value}
+}
 
 // getter function that returns the IssueStatus value
 func (s Status) Value() Status {
 	return s
 }
 
-func ValidStatus(value Status) bool {
-	return validStatuses[value]
+func (s Status) ToString() string {
+	return statusNames[s]
 }
