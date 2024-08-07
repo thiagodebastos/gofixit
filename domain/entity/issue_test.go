@@ -35,7 +35,7 @@ func TestNewIssue(t *testing.T) {
 
 	for _, tt := range tests {
 		id := uuid.New()
-		newIssue, err := NewIssue(id, tt.title, tt.description, tt.status, tt.priority)
+		newIssue, err := CreateIssue(id, tt.title, tt.description, tt.status, tt.priority)
 
 		if tt.expectErr {
 			if err == nil {
@@ -157,7 +157,7 @@ func TestSetIssueStatus(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			newIssue, err := NewIssue(uuid.New(), "Test Issue", "", tt.status, tt.priority)
+			newIssue, err := CreateIssue(uuid.New(), "Test Issue", "", tt.status, tt.priority)
 			if err != nil {
 				t.Fatalf("failed to create a new issue: %v", err)
 			}
@@ -179,7 +179,7 @@ func TestSetIssueStatus(t *testing.T) {
 }
 
 func TestSetIssueTitle(t *testing.T) {
-	newIssue, err := NewIssue(
+	newIssue, err := CreateIssue(
 		uuid.New(),
 		"Test Title",
 		"Test Description",
@@ -198,7 +198,7 @@ func TestSetIssueTitle(t *testing.T) {
 }
 
 func TestSetIssuePriority(t *testing.T) {
-	newIssue, err := NewIssue(
+	newIssue, err := CreateIssue(
 		uuid.New(),
 		"Test Title",
 		"Test Description",

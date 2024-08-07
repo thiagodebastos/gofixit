@@ -28,10 +28,10 @@ func TestSetPriorityFromString(t *testing.T) {
 }
 
 func TestGetPriorityString(t *testing.T) {
-	priorityString := Priority(PriorityHigh).ToString()
+	priority := Priority(PriorityHigh).String()
 
 	want := "high"
-	got := priorityString
+	got := priority
 
 	if got != want {
 		t.Errorf("got %v want %v", got, want)

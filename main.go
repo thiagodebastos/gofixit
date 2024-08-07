@@ -35,7 +35,7 @@ func createIssue() entity.Issue {
 		newPriority, priorityOk = valueobject.PriorityFromString(priority)
 	}
 
-	i, _ := entity.NewIssue(
+	i, _ := entity.CreateIssue(
 		uuid.New(),
 		title,
 		description,
@@ -56,7 +56,7 @@ func main() {
 		printAligned("Title", i.Title())
 		printAligned("Description", i.Description())
 		printAligned("Status", i.Status().ToString())
-		printAligned("Priority", i.Priority().ToString())
+		printAligned("Priority", i.Priority().String())
 		fmt.Printf("\n")
 	}
 

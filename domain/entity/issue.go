@@ -33,8 +33,9 @@ type issueEntity struct {
 
 var ErrInvalidStatus = errors.New("invalid status")
 
-// NewIssue is a factory responsible for creating a new Issue
-func NewIssue(id uuid.UUID,
+// CreateIssue is a factory responsible for creating a new Issue
+func CreateIssue(
+	id uuid.UUID,
 	title string,
 	description string,
 	status valueobject.Status,

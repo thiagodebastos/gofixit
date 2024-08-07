@@ -10,3 +10,17 @@
 6. **Specifications**: Encapsulate domain logic to check if objects satisfy certain criteria.
 7. **Domain Events**: Capture significant changes in the domain and react to them.
 8. **Infrastructure Layer**: Handle persistence, messaging, and external system integration.
+
+## Domain
+
+### Entities
+
+- `Issue`
+- `Asignee`
+- `Project`
+
+### Value Objects
+
+- `Status`
+  - Validate valid `Status` transitions
+- `Priority`
