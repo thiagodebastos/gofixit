@@ -3,12 +3,14 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
 	"github.com/google/uuid"
 	"github.com/thiagodebastos/gofixit/domain/entity"
 	"github.com/thiagodebastos/gofixit/domain/valueobject"
+	"github.com/thiagodebastos/gofixit/infra/persistence/sqlite"
 )
 
 func createIssue() entity.Issue {
@@ -47,6 +49,29 @@ func createIssue() entity.Issue {
 }
 
 func main() {
+	// Open a connection to an in-memory SQLite database.
+	conn, err := sqlite.OpenConn(":memory:", sqlite.OpenReadWrite)
+	if err != nil {
+		log.Fatalf("failed to open database connection: %v", err)
+	}
+	defer conn.Close()
+
+	// Set up your repositories
+	userRepo := sqlite.NewUserRepository(conn)
+	issueRepo := sqlite.NewIssueRepository(conn)
+
+	// Example of using the repositories
+	err = userRepo.CreateUser()
+	if err != nil {
+		log.Fatalf("failed to create user: %v", err)
+	}
+
+	user, err := userRepo.GetUser(1)
+	if err != nil {
+		log.Fatalf("failed to get user: %v", err)
+	}
+	log.Printf("User: %v", user)
+
 	printAligned := func(label string, value interface{}) {
 		fmt.Printf("%-12s: %v\n", label, value)
 	}
